@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"housing-anywhere/models"
 	"housing-anywhere/services"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -37,10 +38,18 @@ func navigation(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(loc)
 }
 
+func healthcheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	io.WriteString(w, `{"alive": true}`)
+}
+
 func main() {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1").Subrouter()
 	api.HandleFunc("", navigation).Methods(http.MethodPost)
+	api.HandleFunc("/health", healthcheck).Methods(http.MethodGet)
 
 	log.Print("Listening on localhost:5000")
 	log.Fatal(http.ListenAndServe(":5000", r))
