@@ -31,7 +31,11 @@ func navigation(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	loc := services.Calculate(location)
+	loc, err := services.Calculate(location)
+	if err != nil{
+		http.Error(w, "Error calculating location", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
