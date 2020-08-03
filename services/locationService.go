@@ -1,10 +1,9 @@
 package services
 
 import (
-	"github.com/tkanos/gonfig"
+	"github.com/spf13/viper"
 	"housing-anywhere/models"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -32,12 +31,16 @@ func parseStringToFloat(dimension string) float64{
 }
 
 func getConfiguration() models.Configuration {
-	configuration := models.Configuration{}
-	if os.Getenv("ENV") == "development" {
-		err := gonfig.GetConf("configs/config.development.json", &configuration)
-		if err != nil {
-			log.Fatal(err)
-		}
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	var configuration models.Configuration
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading config file, %s", err)
+	}
+	err := viper.Unmarshal(&configuration)
+	if err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
 	}
 
 	return configuration

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"housing-anywhere/models"
 	"housing-anywhere/services"
@@ -35,7 +36,7 @@ func navigation(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	json.NewEncoder(w).Encode(loc)
+	io.WriteString(w, `{"loc": `+ fmt.Sprintf("%.2f", loc) +`}`)
 }
 
 func healthcheck(w http.ResponseWriter, r *http.Request) {
